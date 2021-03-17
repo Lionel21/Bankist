@@ -75,14 +75,12 @@ const displayMovements = function (movements) {
     containerMovements.insertAdjacentHTML('afterbegin', html);
   });
 }
-displayMovements(account1.movements);
 
 // Calculate Total Balance
 const calcAndDisplayBalance = function (movements) {
   const balance = movements.reduce((acc, value) => acc + value, 0);
   labelBalance.textContent = `${balance} €`;
 }
-calcAndDisplayBalance(account1.movements);
 
 // Calculate and display account summary
 const calcAndDisplaySummary = function (movements) {
@@ -103,7 +101,6 @@ const calcAndDisplaySummary = function (movements) {
       .reduce((acc, int) => acc + int) // int = interest
   labelSumInterest.textContent = `${interest} €`;
 }
-calcAndDisplaySummary(account1.movements);
 
 
 // Get user name intials
@@ -124,16 +121,19 @@ btnLogin.addEventListener('click', function (event) {
   event.preventDefault();
 
   currentAccount = accounts.find(acc => acc?.username === inputLoginUsername.value)   // acc = account
-  console.log(currentAccount);
   if (currentAccount?.pin === Number(inputLoginPin.value)) {
     // Display UI and Welcome Message
-    labelWelcome.textContent = `Welcome Back ${currentAccount.owner.split(' ')[0]}`; // Only the Firstname Selected
-    // Display Movements
+    labelWelcome.textContent = `Welcome Back, ${currentAccount.owner.split(' ')[0]}`; // Only the Firstname Selected
     containerApp.style.opacity = 100;
 
+    // Display Movements
+    displayMovements(currentAccount.movements);
+
     // Display Balance
+    calcAndDisplayBalance(currentAccount.movements);
 
     // Display Summary
+    calcAndDisplaySummary(currentAccount.movements);
 
   }
 

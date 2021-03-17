@@ -77,6 +77,16 @@ const displayMovements = function (movements) {
 }
 displayMovements(account1.movements);
 
+const createUsernames = function (accs) {
+  accs.forEach(function (acc) {
+    acc.userInitials = acc.owner.toLowerCase().split(' ').map(letter =>
+        `${letter.charAt(0)}`
+    ).join('');
+  });
+};
+
+createUsernames(accounts);
+
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 // LECTURES

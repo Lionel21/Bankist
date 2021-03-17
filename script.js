@@ -109,13 +109,34 @@ calcAndDisplaySummary(account1.movements);
 // Get user name intials
 const createUsernames = function (accs) {
   accs.forEach(function (acc) {
-    acc.userInitials = acc.owner.toLowerCase().split(' ').map(letter =>
+    acc.username = acc.owner.toLowerCase().split(' ').map(letter =>
         `${letter.charAt(0)}`
     ).join('');
   });
 };
-
 createUsernames(accounts);
+
+// Event Handlers
+let currentAccount;
+
+btnLogin.addEventListener('click', function (event) {
+  // Prevent form from submitting
+  event.preventDefault();
+
+  currentAccount = accounts.find(acc => acc?.username === inputLoginUsername.value)   // acc = account
+  console.log(currentAccount);
+  if (currentAccount?.pin === Number(inputLoginPin.value)) {
+    // Display UI and Welcome Message
+
+    // Display Movements
+
+    // Display Balance
+
+    // Display Summary
+
+  }
+
+});
 
 
 const currencies = new Map([

@@ -83,7 +83,7 @@ const calcAndDisplayBalance = function (movements) {
 }
 
 // Calculate and display account summary
-const calcAndDisplaySummary = function (acc) {
+const calcAndDisplaySummary = function (acc) {  // We pass in the entire account
   const incomes = acc.movements
       .filter(mov => mov > 0)
       .reduce((acc, mov) => acc + mov, 0);

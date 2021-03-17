@@ -75,47 +75,74 @@ const displayMovements = function (movements) {
     containerMovements.insertAdjacentHTML('afterbegin', html);
   });
 }
-displayMovements(account1.movements);
 
 // Calculate Total Balance
 const calcAndDisplayBalance = function (movements) {
   const balance = movements.reduce((acc, value) => acc + value, 0);
   labelBalance.textContent = `${balance} €`;
 }
-calcAndDisplayBalance(account1.movements);
 
 // Calculate and display account summary
-const calcAndDisplaySummary = function (movements) {
-  const incomes = movements
+const calcAndDisplaySummary = function (acc) {  // We pass in the entire account
+  const incomes = acc.movements
       .filter(mov => mov > 0)
       .reduce((acc, mov) => acc + mov, 0);
   labelSumIn.textContent = `${incomes} €`;
 
-  const out = movements
+  const out = acc.movements
       .filter(mov => mov < 0)
       .reduce((acc, mov) => acc + mov, 0);
   labelSumOut.textContent = `${Math.abs(out)} €`;
 
-  const interest = movements
+  const interest = acc.movements
       .filter(mov => mov > 0)
-      .map(deposit => deposit * 1.2/100)
+      .map(deposit => deposit * acc.interestRate / 100)
       .filter((int, i, arr) => int >= 1)   // int = interest
       .reduce((acc, int) => acc + int) // int = interest
   labelSumInterest.textContent = `${interest} €`;
 }
-calcAndDisplaySummary(account1.movements);
 
 
 // Get user name intials
 const createUsernames = function (accs) {
   accs.forEach(function (acc) {
-    acc.userInitials = acc.owner.toLowerCase().split(' ').map(letter =>
+    acc.username = acc.owner.toLowerCase().split(' ').map(letter =>
         `${letter.charAt(0)}`
     ).join('');
   });
 };
-
 createUsernames(accounts);
+
+// Event Handlers
+let currentAccount;
+
+btnLogin.addEventListener('click', function (event) {
+  // Prevent form from submitting
+  event.preventDefault();
+
+  currentAccount = accounts.find(acc => acc?.username === inputLoginUsername.value)   // acc = account
+  if (currentAccount?.pin === Number(inputLoginPin.value)) {
+    // Display UI and Welcome Message
+    labelWelcome.textContent = `Welcome Back, ${currentAccount.owner.split(' ')[0]}`; // Only the Firstname Selected
+    containerApp.style.opacity = 100;
+
+    // Clear Fields
+    inputLoginUsername.value = '';
+    inputLoginPin.value = '';
+    inputLoginPin.blur(); // Lose field focus
+
+    // Display Movements
+    displayMovements(currentAccount.movements);
+
+    // Display Balance
+    calcAndDisplayBalance(currentAccount.movements);
+
+    // Display Summary
+    calcAndDisplaySummary(currentAccount);
+
+  }
+
+});
 
 
 const currencies = new Map([

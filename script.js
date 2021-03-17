@@ -127,8 +127,9 @@ btnLogin.addEventListener('click', function (event) {
   console.log(currentAccount);
   if (currentAccount?.pin === Number(inputLoginPin.value)) {
     // Display UI and Welcome Message
-
+    labelWelcome.textContent = `Welcome Back ${currentAccount.owner.split(' ')[0]}`; // Only the Firstname Selected
     // Display Movements
+    containerApp.style.opacity = 100;
 
     // Display Balance
 

@@ -77,6 +77,13 @@ const displayMovements = function (movements) {
 }
 displayMovements(account1.movements);
 
+// Calculate Total Balance
+const calcAndDisplayBalance = function (movements) {
+  const balance = movements.reduce((acc, value) => acc + value, 0);
+  labelBalance.textContent = `${balance} €`;
+}
+calcAndDisplayBalance(account1.movements);
+
 const createUsernames = function (accs) {
   accs.forEach(function (acc) {
     acc.userInitials = acc.owner.toLowerCase().split(' ').map(letter =>
@@ -86,6 +93,8 @@ const createUsernames = function (accs) {
 };
 
 createUsernames(accounts);
+
+
 
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////

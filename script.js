@@ -151,6 +151,7 @@ btnLogin.addEventListener('click', function (event) {
 // Transfer money from a user to an other user
 btnTransfer.addEventListener('click', function (e) {
   e.preventDefault();
+
   const amount = Number(inputTransferAmount.value);
   const receiverAccount = accounts.find(acc => acc?.userInitials === inputTransferTo.value);
 
@@ -168,6 +169,21 @@ btnTransfer.addEventListener('click', function (e) {
     // Update the user interface
     updateUI(currentAccount);
   }
+});
+
+// Delete User Account
+btnClose.addEventListener('click', function (e) {
+  e.preventDefault();
+
+  if (inputCloseUsername.value === currentAccount.userInitials && Number(inputClosePin.value) === currentAccount.pin) {
+    const index = accounts.findIndex(acc => acc.userInitials === currentAccount.userInitials); // Find user index
+    accounts.splice(index, 1) // Select the index and remove only one element (Delete Account)
+    containerApp.style.opacity = 0;
+  }
+
+  inputCloseUsername.value = '';
+  inputClosePin.value = '';
+  inputClosePin.blur();
 });
 
 

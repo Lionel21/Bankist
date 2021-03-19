@@ -77,9 +77,9 @@ const displayMovements = function (movements) {
 }
 
 // Calculate Total Balance
-const calcAndDisplayBalance = function (movements) {
-  const balance = movements.reduce((acc, value) => acc + value, 0);
-  labelBalance.textContent = `${balance} €`;
+const calcAndDisplayBalance = function (acc) {
+  acc.balance = acc.movements.reduce((acc, value) => acc + value, 0);
+  labelBalance.textContent = `${acc.balance} €`;
 }
 
 // Calculate and display account summary
@@ -106,21 +106,33 @@ const calcAndDisplaySummary = function (acc) {  // We pass in the entire account
 // Get user name intials
 const createUsernames = function (accs) {
   accs.forEach(function (acc) {
-    acc.username = acc.owner.toLowerCase().split(' ').map(letter =>
+    acc.userInitials = acc.owner.toLowerCase().split(' ').map(letter =>
         `${letter.charAt(0)}`
     ).join('');
   });
 };
 createUsernames(accounts);
 
+const updateUI = function (acc) {
+  // Display Movements
+  displayMovements(acc.movements);
+
+  // Display Balance
+  calcAndDisplayBalance(acc);
+
+  // Display Summary
+  calcAndDisplaySummary(acc);
+}
+
 // Event Handlers
 let currentAccount;
 
+// Get user and account summary
 btnLogin.addEventListener('click', function (event) {
   // Prevent form from submitting
   event.preventDefault();
 
-  currentAccount = accounts.find(acc => acc?.username === inputLoginUsername.value)   // acc = account
+  currentAccount = accounts.find(acc => acc?.userInitials === inputLoginUsername.value)   // acc = account
   if (currentAccount?.pin === Number(inputLoginPin.value)) {
     // Display UI and Welcome Message
     labelWelcome.textContent = `Welcome Back, ${currentAccount.owner.split(' ')[0]}`; // Only the Firstname Selected
@@ -131,17 +143,31 @@ btnLogin.addEventListener('click', function (event) {
     inputLoginPin.value = '';
     inputLoginPin.blur(); // Lose field focus
 
-    // Display Movements
-    displayMovements(currentAccount.movements);
-
-    // Display Balance
-    calcAndDisplayBalance(currentAccount.movements);
-
-    // Display Summary
-    calcAndDisplaySummary(currentAccount);
-
+    // Update the user interface
+    updateUI(currentAccount);
   }
+});
 
+// Transfer money from a user to an other user
+btnTransfer.addEventListener('click', function (e) {
+  e.preventDefault();
+  const amount = Number(inputTransferAmount.value);
+  const receiverAccount = accounts.find(acc => acc?.userInitials === inputTransferTo.value);
+
+  // Check if the current user has enough money in his account and not transfer to the same account
+  if (amount > 0 && currentAccount.balance >= amount && receiverAccount?.userInitials !== currentAccount.userInitials) {
+    // Doing the transfer
+    currentAccount.movements.push(-amount); // Add negative amount for the current user
+    receiverAccount.movements.push(amount); // Add positive amount for the receiver
+
+    // Clear Fields
+    inputTransferTo.value = '';
+    inputTransferAmount.value = '';
+    inputTransferAmount.blur();
+
+    // Update the user interface
+    updateUI(currentAccount);
+  }
 });
 
 

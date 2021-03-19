@@ -1,9 +1,5 @@
 'use strict';
 
-/////////////////////////////////////////////////
-/////////////////////////////////////////////////
-// BANKIST APP
-
 // Data
 const account1 = {
   owner: 'Lionel Delamare',
@@ -169,6 +165,26 @@ btnTransfer.addEventListener('click', function (e) {
     // Update the user interface
     updateUI(currentAccount);
   }
+});
+
+// Loan Features
+btnLoan.addEventListener('click', function (e) {
+  e.preventDefault();
+
+  const amount = Number(inputLoanAmount.value);
+
+  // Loan granted only if the deposit >= 10 % of the requested amount of loan
+  if (amount > 0 && currentAccount.movements.some(mov => mov >= amount / 10)) {
+    // Add the movement
+    currentAccount.movements.push(amount);
+
+    // Update UI
+    updateUI(currentAccount);
+  }
+
+  // Clear Field
+  inputLoanAmount.value = '';
+  inputLoanAmount.blur();
 });
 
 // Delete User Account

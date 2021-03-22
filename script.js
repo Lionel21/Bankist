@@ -188,19 +188,9 @@ const updateUI = function (acc) {
 // Event Handlers
 let currentAccount;
 
-currentAccount = account1;
-updateUI(currentAccount);
-containerApp.style.opacity = 100;
-
-// Implementing date
-const now = new Date();
-const day = `${now.getDate()}`.padStart(2, 0);
-const month = `${now.getMonth() + 1}`.padStart(2, 0);
-const year = now.getFullYear();
-const hour = now.getHours();
-const minute = now.getMinutes();
-
-labelDate.textContent = `${day}/${month}/${year}, ${hour}:${minute}`;
+// currentAccount = account1;
+// updateUI(currentAccount);
+// containerApp.style.opacity = 100;
 
 // Get user and account summary
 btnLogin.addEventListener('click', function (event) {
@@ -212,6 +202,16 @@ btnLogin.addEventListener('click', function (event) {
     // Display UI and Welcome Message
     labelWelcome.textContent = `Welcome Back, ${currentAccount.owner.split(' ')[0]}`; // Only the Firstname Selected
     containerApp.style.opacity = 100;
+
+    // Implementing current date
+    const now = new Date();
+    const day = `${now.getDate()}`.padStart(2, 0);
+    const month = `${now.getMonth() + 1}`.padStart(2, 0);
+    const year = now.getFullYear();
+    const hour = now.getHours();
+    const minute = `${now.getMinutes()}`.padStart(2, 0);
+
+    labelDate.textContent = `${day}/${month}/${year}, ${hour}:${minute}`;
 
     // Clear Fields
     inputLoginUsername.value = '';
@@ -236,6 +236,10 @@ btnTransfer.addEventListener('click', function (e) {
     currentAccount.movements.push(-amount); // Add negative amount for the current user
     receiverAccount.movements.push(amount); // Add positive amount for the receiver
 
+    // Add transfer date
+    currentAccount.movementsDates.push(new Date());
+    receiverAccount.movementsDates.push(new Date());
+
     // Clear Fields
     inputTransferTo.value = '';
     inputTransferAmount.value = '';
@@ -256,6 +260,9 @@ btnLoan.addEventListener('click', function (e) {
   if (amount > 0 && currentAccount.movements.some(mov => mov >= amount / 10)) {
     // Add the movement
     currentAccount.movements.push(amount);
+
+    // Add loan date
+    currentAccount.movementsDates.push(new Date());
 
     // Update UI
     updateUI(currentAccount);

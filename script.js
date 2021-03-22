@@ -88,19 +88,19 @@ const calcAndDisplaySummary = function (acc) {  // We pass in the entire account
   const incomes = acc.movements
       .filter(mov => mov > 0)
       .reduce((acc, mov) => acc + mov, 0);
-  labelSumIn.textContent = `${incomes} €`;
+  labelSumIn.textContent = `${incomes.toFixed(2)} €`;
 
   const out = acc.movements
       .filter(mov => mov < 0)
       .reduce((acc, mov) => acc + mov, 0);
-  labelSumOut.textContent = `${Math.abs(out)} €`;
+  labelSumOut.textContent = `${Math.abs(out).toFixed(2)} €`;
 
   const interest = acc.movements
       .filter(mov => mov > 0)
       .map(deposit => deposit * acc.interestRate / 100)
       .filter((int, i, arr) => int >= 1)   // int = interest
       .reduce((acc, int) => acc + int) // int = interest
-  labelSumInterest.textContent = `${interest} €`;
+  labelSumInterest.textContent = `${interest.toFixed(2)} €`;
 }
 
 
@@ -134,7 +134,7 @@ btnLogin.addEventListener('click', function (event) {
   event.preventDefault();
 
   currentAccount = accounts.find(acc => acc?.userInitials === inputLoginUsername.value)   // acc = account
-  if (currentAccount?.pin === Number(inputLoginPin.value)) {
+  if (currentAccount?.pin === +inputLoginPin.value) {
     // Display UI and Welcome Message
     labelWelcome.textContent = `Welcome Back, ${currentAccount.owner.split(' ')[0]}`; // Only the Firstname Selected
     containerApp.style.opacity = 100;
@@ -153,7 +153,7 @@ btnLogin.addEventListener('click', function (event) {
 btnTransfer.addEventListener('click', function (e) {
   e.preventDefault();
 
-  const amount = Number(inputTransferAmount.value);
+  const amount = +inputTransferAmount.value;
   const receiverAccount = accounts.find(acc => acc?.userInitials === inputTransferTo.value);
 
   // Check if the current user has enough money in his account and not transfer to the same account
@@ -176,7 +176,7 @@ btnTransfer.addEventListener('click', function (e) {
 btnLoan.addEventListener('click', function (e) {
   e.preventDefault();
 
-  const amount = Number(inputLoanAmount.value);
+  const amount = Math.floor(inputLoanAmount.value);
 
   // Loan granted only if the deposit >= 10 % of the requested amount of loan
   if (amount > 0 && currentAccount.movements.some(mov => mov >= amount / 10)) {
@@ -196,7 +196,7 @@ btnLoan.addEventListener('click', function (e) {
 btnClose.addEventListener('click', function (e) {
   e.preventDefault();
 
-  if (inputCloseUsername.value === currentAccount.userInitials && Number(inputClosePin.value) === currentAccount.pin) {
+  if (inputCloseUsername.value === currentAccount.userInitials && +inputClosePin.value === currentAccount.pin) {
     const index = accounts.findIndex(acc => acc.userInitials === currentAccount.userInitials); // Find user index
     accounts.splice(index, 1) // Select the index and remove only one element (Delete Account)
     containerApp.style.opacity = 0;

@@ -18,7 +18,7 @@ const account1 = {
     '2021-03-22T10:51:36.790Z',
   ],
   currency: 'EUR',
-  locale: 'pt-PT', // de-DE
+  locale: 'fr-FR',
 };
 
 const account2 = {
@@ -38,7 +38,7 @@ const account2 = {
     '2020-07-26T12:01:20.894Z',
   ],
   currency: 'USD',
-  locale: 'en-US',
+  locale: 'en-GB',
 };
 
 const account3 = {
@@ -58,7 +58,7 @@ const account3 = {
     '2020-07-12T10:51:36.790Z',
   ],
   currency: 'EUR',
-  locale: 'pt-PT', // de-DE
+  locale: 'en-US',
 };
 
 const account4 = {
@@ -78,7 +78,7 @@ const account4 = {
     '2020-07-12T10:51:36.790Z',
   ],
   currency: 'EUR',
-  locale: 'pt-PT', // de-DE
+  locale: 'ar-SY',
 };
 
 const accounts = [account1, account2, account3, account4];
@@ -109,7 +109,7 @@ const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
-const formatMovementDate = function (date) {
+const formatMovementDate = function (date, locale) {
 
   /**
    * Function to calculate the number of days between two dates
@@ -129,12 +129,7 @@ const formatMovementDate = function (date) {
   if (daysPassed === 0) return 'Today'; // If daysPassed = today => print 'Today'
   if (daysPassed === 1) return 'Yesterday'; // If daysPassed = yesterday => print 'Yesterday'
   if (daysPassed <= 7) return `${daysPassed} days ago`; // If daysPassed = last week  => print 'Last week'
-  else {
-    const day = `${date.getDate()}`.padStart(2, 0);
-    const month = `${date.getMonth() + 1}`.padStart(2, 0);
-    const year = `${date.getFullYear()}`;
-    return `${day}/${month}/${year}`;
-  }
+  return new Intl.DateTimeFormat(locale).format(date);
 };
 
 const displayMovements = function (acc, sort = false) {
@@ -147,7 +142,7 @@ const displayMovements = function (acc, sort = false) {
   movs.forEach(function (currentMovement, index) {
     const type = currentMovement > 0 ? 'deposit' : 'withdrawal';
     const date = new Date(acc.movementsDates[index]);
-    const displayDate = formatMovementDate(date);
+    const displayDate = formatMovementDate(date, acc.locale);
 
     const html = `
     <div class="movements__row">
@@ -211,6 +206,10 @@ const updateUI = function (acc) {
 // Event Handlers
 let currentAccount;
 
+// currentAccount = account1;
+// updateUI(currentAccount);
+// containerApp.style.opacity = 100;
+
 // Get user and account summary
 btnLogin.addEventListener('click', function (event) {
   // Prevent form from submitting
@@ -224,13 +223,14 @@ btnLogin.addEventListener('click', function (event) {
 
     // Implementing current date
     const now = new Date();
-    const day = `${now.getDate()}`.padStart(2, 0);
-    const month = `${now.getMonth() + 1}`.padStart(2, 0);
-    const year = now.getFullYear();
-    const hour = `${now.getHours()}`.padStart(2, 0);
-    const minute = `${now.getMinutes()}`.padStart(2, 0);
-
-    labelDate.textContent = `${day}/${month}/${year}, ${hour}:${minute}`;
+    const options = {
+      hour: 'numeric',
+      minute: 'numeric',
+      day: 'numeric',
+      month: 'numeric',
+      year: 'numeric',
+    };
+    labelDate.textContent = new Intl.DateTimeFormat(currentAccount.locale, options).format(now);
 
     // Clear Fields
     inputLoginUsername.value = '';

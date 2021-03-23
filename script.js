@@ -112,7 +112,7 @@ const inputClosePin = document.querySelector('.form__input--pin');
 const formatMovementDate = function (date, locale) {
 
   /**
-   * Function to calculate the number of days between two dates
+   * Function to calculate the number of days passed between two dates
    * @param date1
    * @param date2
    * @returns {number}
@@ -223,12 +223,29 @@ const updateUI = function (acc) {
   calcAndDisplaySummary(acc);
 }
 
+const startLogOutTimer = function () {
+  // Setting the time to 5 minutes
+  let time = 120;
+
+  // Call the timer every second
+  setInterval(function () {
+    const minutes = String(Math.trunc(time / 60)).padStart(2, '0');
+    const secondes = String(Math.trunc(time % 60)).padStart(2, '0');
+    // In each call, print the remaining time to the user interface
+    labelTimer.textContent = `${minutes}:${secondes}`;
+
+    // Decrease 1 second
+    time--;
+
+  }, 1000);
+
+
+  // When the time is 0 (expired), stop timer and log out the user
+
+}
+
 // Event Handlers
 let currentAccount;
-
-// currentAccount = account1;
-// updateUI(currentAccount);
-// containerApp.style.opacity = 100;
 
 // Get user and account summary
 btnLogin.addEventListener('click', function (event) {
@@ -256,6 +273,9 @@ btnLogin.addEventListener('click', function (event) {
     inputLoginUsername.value = '';
     inputLoginPin.value = '';
     inputLoginPin.blur(); // Lose field focus
+
+    // Start timer
+    startLogOutTimer();
 
     // Update the user interface
     updateUI(currentAccount);
@@ -297,14 +317,15 @@ btnLoan.addEventListener('click', function (e) {
 
   // Loan granted only if the deposit >= 10 % of the requested amount of loan
   if (amount > 0 && currentAccount.movements.some(mov => mov >= amount / 10)) {
-    // Add the movement
-    currentAccount.movements.push(amount);
+    setTimeout(function() {// Add the movement
+      currentAccount.movements.push(amount);
 
-    // Add loan date
-    currentAccount.movementsDates.push(new Date().toISOString());
+      // Add loan date
+      currentAccount.movementsDates.push(new Date().toISOString());
 
-    // Update UI
-    updateUI(currentAccount);
+      // Update UI
+      updateUI(currentAccount);
+    }, 2500);
   }
 
   // Clear Field

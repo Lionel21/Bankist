@@ -112,7 +112,7 @@ const inputClosePin = document.querySelector('.form__input--pin');
 const formatMovementDate = function (date, locale) {
 
   /**
-   * Function to calculate the number of days between two dates
+   * Function to calculate the number of days passed between two dates
    * @param date1
    * @param date2
    * @returns {number}
@@ -223,12 +223,35 @@ const updateUI = function (acc) {
   calcAndDisplaySummary(acc);
 }
 
-// Event Handlers
-let currentAccount;
+const startLogOutTimer = function () {
+  // Setting the time to 5 minutes
+  let time = 600;
 
-// currentAccount = account1;
-// updateUI(currentAccount);
-// containerApp.style.opacity = 100;
+  const timerTick = function () {
+    const minutes = String(Math.trunc(time / 60)).padStart(2, '0');
+    const secondes = String(Math.trunc(time % 60)).padStart(2, '0');
+    // In each call, print the remaining time to the user interface
+    labelTimer.textContent = `${minutes}:${secondes}`;
+
+    // When the time is 0 (expired), stop timer and log out the user
+    if (time === 0) {
+      clearInterval(loginTimer);
+      labelWelcome.textcontent = 'Log in to get started';
+      containerApp.style.opacity = 0;
+    }
+
+    // Decrease 1 second
+    time--;
+  };
+
+  // Call the timer every second
+  timerTick();
+  const loginTimer = setInterval(timerTick,1000);
+  return loginTimer;
+};
+
+// Event Handlers
+let currentAccount, timer;
 
 // Get user and account summary
 btnLogin.addEventListener('click', function (event) {
@@ -256,6 +279,10 @@ btnLogin.addEventListener('click', function (event) {
     inputLoginUsername.value = '';
     inputLoginPin.value = '';
     inputLoginPin.blur(); // Lose field focus
+
+    // Timer
+    if (timer) clearInterval(timer); // If a timer already exists => clear it
+    timer =  startLogOutTimer(); // Start new timer
 
     // Update the user interface
     updateUI(currentAccount);
@@ -286,6 +313,10 @@ btnTransfer.addEventListener('click', function (e) {
 
     // Update the user interface
     updateUI(currentAccount);
+
+    // Reset the timer
+    clearInterval(timer);
+    timer = startLogOutTimer();
   }
 });
 
@@ -297,14 +328,19 @@ btnLoan.addEventListener('click', function (e) {
 
   // Loan granted only if the deposit >= 10 % of the requested amount of loan
   if (amount > 0 && currentAccount.movements.some(mov => mov >= amount / 10)) {
-    // Add the movement
-    currentAccount.movements.push(amount);
+    setTimeout(function() {// Add the movement
+      currentAccount.movements.push(amount);
 
-    // Add loan date
-    currentAccount.movementsDates.push(new Date().toISOString());
+      // Add loan date
+      currentAccount.movementsDates.push(new Date().toISOString());
 
-    // Update UI
-    updateUI(currentAccount);
+      // Update UI
+      updateUI(currentAccount);
+    }, 2500);
+
+    // Reset the timer
+    clearInterval(timer);
+    timer = startLogOutTimer();
   }
 
   // Clear Field
@@ -334,10 +370,3 @@ btnSort.addEventListener('click', function (e) {
   displayMovements(currentAccount, !sorted);
   sorted = !sorted; // Flip the sorted variable
 });
-
-
-const currencies = new Map([
-  ['USD', 'United States dollar'],
-  ['EUR', 'Euro'],
-  ['GBP', 'Pound sterling'],
-]);

@@ -225,27 +225,33 @@ const updateUI = function (acc) {
 
 const startLogOutTimer = function () {
   // Setting the time to 5 minutes
-  let time = 120;
+  let time = 600;
 
-  // Call the timer every second
-  setInterval(function () {
+  const timerTick = function () {
     const minutes = String(Math.trunc(time / 60)).padStart(2, '0');
     const secondes = String(Math.trunc(time % 60)).padStart(2, '0');
     // In each call, print the remaining time to the user interface
     labelTimer.textContent = `${minutes}:${secondes}`;
 
+    // When the time is 0 (expired), stop timer and log out the user
+    if (time === 0) {
+      clearInterval(loginTimer);
+      labelWelcome.textcontent = 'Log in to get started';
+      containerApp.style.opacity = 0;
+    }
+
     // Decrease 1 second
     time--;
+  };
 
-  }, 1000);
-
-
-  // When the time is 0 (expired), stop timer and log out the user
-
-}
+  // Call the timer every second
+  timerTick();
+  const loginTimer = setInterval(timerTick,1000);
+  return loginTimer;
+};
 
 // Event Handlers
-let currentAccount;
+let currentAccount, timer;
 
 // Get user and account summary
 btnLogin.addEventListener('click', function (event) {
@@ -274,8 +280,9 @@ btnLogin.addEventListener('click', function (event) {
     inputLoginPin.value = '';
     inputLoginPin.blur(); // Lose field focus
 
-    // Start timer
-    startLogOutTimer();
+    // Timer
+    if (timer) clearInterval(timer); // If a timer already exists => clear it
+    timer =  startLogOutTimer(); // Start new timer
 
     // Update the user interface
     updateUI(currentAccount);
@@ -306,6 +313,10 @@ btnTransfer.addEventListener('click', function (e) {
 
     // Update the user interface
     updateUI(currentAccount);
+
+    // Reset the timer
+    clearInterval(timer);
+    timer = startLogOutTimer();
   }
 });
 
@@ -326,6 +337,10 @@ btnLoan.addEventListener('click', function (e) {
       // Update UI
       updateUI(currentAccount);
     }, 2500);
+
+    // Reset the timer
+    clearInterval(timer);
+    timer = startLogOutTimer();
   }
 
   // Clear Field
@@ -355,10 +370,3 @@ btnSort.addEventListener('click', function (e) {
   displayMovements(currentAccount, !sorted);
   sorted = !sorted; // Flip the sorted variable
 });
-
-
-const currencies = new Map([
-  ['USD', 'United States dollar'],
-  ['EUR', 'Euro'],
-  ['GBP', 'Pound sterling'],
-]);
